@@ -1,0 +1,25 @@
+{
+  "name": "phantombot",
+  "version": "1.0.0",
+  "description": "This bot was created for order by telegram user \"@phxxtom\". Price: unknown. Using: sale order/sale hand/upload to product. Table of tasks: package://tasks/*.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dikiyz/discrordBot.git"
+  },
+  "author": "Ruslan Merkulov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dikiyz/discrordBot/issues"
+  },
+  "homepage": "https://github.com/Dikiyz/discrordBot#readme",
+  "dependencies": {
+    "@discordjs/collection": "^0.4.0",
+    "discord.js": "^13.5.0",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.12.5"
+  }
+}
