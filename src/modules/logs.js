@@ -1,10 +1,9 @@
-const debug = require('./debug');
 const log_admin = require('../database/db').log_admin;
 const log_user = require('../database/db').log_user;
 const log_system = require('../database/db').log_system;
 const log_any = require('../database/db').log_any;
-
 const logs = exports;
+let debug = require('./debug');
 
 logs.addAdmin = (admin, action, params) => {
     try {
@@ -13,7 +12,9 @@ logs.addAdmin = (admin, action, params) => {
             action: action,
             params: JSON.stringify(params),
         });
-    } catch (err) { debug.error("Function[logs.addAdmin] error: " + err, true); }
+    } catch (err) {
+        debug.error(err);
+    }
 }
 
 logs.addUser = (user, action, params) => {
@@ -23,16 +24,20 @@ logs.addUser = (user, action, params) => {
             action: action,
             params: JSON.stringify(params),
         });
-    } catch (err) { debug.error("Function[logs.addUser] error: " + err, true); }
+    } catch (err) {
+        debug.error(err);
+    }
 }
 
-logs.addSystem = (action, params) => {
+logs.addSystem = async (action, params) => {
     try {
         log_system.create({
             action: action,
             params: JSON.stringify(params),
         });
-    } catch (err) { debug.error("Function[logs.addSystem] error: " + err, true); }
+    } catch (err) {
+        debug.error(err);
+    }
 }
 
 logs.addAny = (action, params) => {
@@ -41,5 +46,7 @@ logs.addAny = (action, params) => {
             action: action,
             params: JSON.stringify(params),
         });
-    } catch (err) { debug.error("Function[logs.addAny] error: " + err, true); }
+    } catch (err) {
+        debug.error(err);
+    }
 }

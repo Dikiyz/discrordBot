@@ -5,6 +5,11 @@ const sequelize = new Sequelize(cfg.database, cfg.user, cfg.password, {
     dialect: "mysql",
     host: cfg.host,
 });
+sequelize.authenticate().then(function (err) {
+    console.log('Connection has been established successfully.');
+}, function (err) {
+    console.log('Unable to connect to the database:', err);
+});
 
 const list_ban = require('./list_ban')(sequelize);
 const list_mute = require('./list_mute')(sequelize);
