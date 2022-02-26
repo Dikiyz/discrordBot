@@ -4,7 +4,8 @@
   "description": "This bot was created for order by telegram user \"@phxxtom\". Price: unknown. Using: sale order/sale hand/upload to product. Table of tasks: package://tasks/*.",
   "main": "src/index.js",
   "scripts": {
-    "start": "node ./src/index.js"
+    "start": "node ./src/index.js",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",

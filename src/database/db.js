@@ -19,6 +19,7 @@ const log_admin = require('./log_admin')(sequelize);
 const log_any = require('./log_any')(sequelize);
 const log_system = require('./log_system')(sequelize);
 const log_user = require('./log_user')(sequelize);
+const reaction_messages = require('./reaction_messages')(sequelize);
 
 module.exports = {
     sequelize: sequelize,
@@ -33,4 +34,7 @@ module.exports = {
     log_any: log_any,
     log_system: log_system,
     log_user: log_user,
+
+    // Другое
+    reaction_messages: reaction_messages,
 };

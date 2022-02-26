@@ -27,7 +27,13 @@ allConfig.discord = {
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
         Intents.FLAGS.DIRECT_MESSAGES,
         Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+        //Intents.FLAGS.GUILD_PRESENCES,
     ],
+    // Доступ роли к комманде (Комманда, потом массив ролей, которые могут её использовать).
+    // P.S. Если комманда не прописана, то её могут использовать все.
+    commandAccess: {
+        "mute": [928074400899670086n],
+    }
 };
 //#endregion
 //#region Mysql

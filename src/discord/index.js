@@ -4,3 +4,4 @@ require('./Core');
 require('./events');
 require('./methods');
 require('./user');
+require('./reactions');

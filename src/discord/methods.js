@@ -1,11 +1,18 @@
 const debug = require('../modules/debug');
 const cfg = require('../modules/config');
-const {Message, GuildMember, Guild} = require("discord.js");
+const { Message, GuildMember, Guild, Role, RoleManager } = require("discord.js");
 const logs = require('../modules/logs');
-const {list_mute, list_warn, list_ban} = require("../database/db");
+const { list_mute, list_warn, list_ban } = require("../database/db");
 
 const methods = exports;
 
+methods.reactions = new Map();
+
+/**
+ * 
+ * @param {Date} date 
+ * @returns string
+ */
 methods.dateToString = (date) => {
     try {
         return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
@@ -14,9 +21,35 @@ methods.dateToString = (date) => {
     }
 }
 
+/**
+ * 
+ * @param {GuildMember} user 
+ * @param {number} roleId 
+ * @param {string} administrator 
+ * @param {string} reason 
+ */
 methods.giveRoleToUser = (user, roleId, administrator = "система", reason = "неизвестно") => {
     try {
+        let role = user.guild.roles.cache.find(role => role.id == parseInt(roleId));
+        if (role) user.roles.add(role, reason);
+        // TODO Логи.
+    } catch (err) {
+        debug.error(err);
+    }
+}
 
+/**
+ * 
+ * @param {GuildMember} user 
+ * @param {number} roleId 
+ * @param {string} administrator 
+ * @param {string} reason 
+ */
+methods.takeRoleFromUser = (user, roleId, administrator = "система", reason = "неизвестно") => {
+    try {
+        let role = user.guild.roles.cache.find(role => role.id == parseInt(roleId));
+        if (role) user.roles.remove(role, reason);
+        // TODO Логи.
     } catch (err) {
         debug.error(err);
     }
@@ -41,7 +74,7 @@ methods.getMemberById = async (id, guild) => {
 /**
  * @param {GuildMember} member
  * @param {string} reason
- * @param {int} time
+ * @param {number} time
  * @returns {Promise<void>}
  */
 methods.ban = async (member, time = 0, reason = 'Неизвестно') => {
@@ -58,7 +91,7 @@ methods.ban = async (member, time = 0, reason = 'Неизвестно') => {
         unbanDate.setMinutes(unbanDate.getMinutes() + time);
 
         list_ban.findOrCreate({
-            where: {userID: member.user.id},
+            where: { userID: member.user.id },
             defaults: {
                 reason: reason,
                 userID: member.user.id,
@@ -93,9 +126,9 @@ methods.warn = async (member, reason = 'Неизвестно') => {
             userID: member.user.id,
             reason: reason,
         });
-        await list_warn.findAll({where: {userID: member.user.id}}).then(async result => {
+        await list_warn.findAll({ where: { userID: member.user.id } }).then(async result => {
             if (result.length >= cfg.discord.maxUserWarns) {
-                await list_warn.destroy({where: {userID: member.user.id}});
+                await list_warn.destroy({ where: { userID: member.user.id } });
                 await methods.ban(member, cfg.discord.timeBanForMaxWarns, `Набрал${result.length} предупреждений.`);
             }
         });
@@ -107,7 +140,7 @@ methods.warn = async (member, reason = 'Неизвестно') => {
 
 /**
  * @param {GuildMember} member
- * @param {int} time
+ * @param {number} time
  * @param {string} reason
  * @returns {Promise<void>}
  */
@@ -125,7 +158,7 @@ methods.mute = async (member, time = 0, reason = 'Неизвестно') => {
 
         list_mute.findOrCreate(
             {
-                where: {userID: member.user.id},
+                where: { userID: member.user.id },
                 defaults: {
                     userID: member.user.id,
                     reason: reason,
@@ -170,7 +203,7 @@ methods.kick = async (member, reason = 'Неизвестно') => {
  */
 methods.checkForMute = async (message) => {
     try {
-        await list_mute.findAll({where: {userID: message.member.user.id}}).then(async res => {
+        await list_mute.findAll({ where: { userID: message.member.user.id } }).then(async res => {
             if (!res) return false;
             for (let idx in res) {
                 if (new Date(res[idx].timeEnd) > Date.now()) {
@@ -190,6 +223,23 @@ methods.checkForMute = async (message) => {
             if (isMute) return
             await methods.checkForBadMessage(message);
         });
+    } catch (err) {
+        debug.error(err);
+    }
+}
+
+/**
+ * 
+ * @param {string} cmd 
+ * @param {GuildMember} member 
+ */
+methods.checkCommandAccess = async (cmd, member) => {
+    try {
+        let accessAllow = false;
+        member.roles.cache.forEach(role => {
+            if (cfg.discord.commandAccess[cmd].includes(role.id)) accessAllow = true;
+        });
+        return accessAllow;
     } catch (err) {
         debug.error(err);
     }
